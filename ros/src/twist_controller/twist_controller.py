@@ -1,3 +1,6 @@
+from yaw_controller import YawController
+from pid import PID
+from lowpass import LowPassFilter
 
 GAS_DENSITY = 2.858
 ONE_MPH = 0.44704
@@ -15,7 +18,7 @@ class Controller(object):
                                     max_lat_accel,
                                     max_steer_angle):
         # TODO: Implement
-        self.yaw_controller = yaw_controller(wheel_base, steer_ratio, 0.1, max_lat_accel, max_steer_angle)
+        self.yaw_controller = YawController(wheel_base, steer_ratio, 0.1, max_lat_accel, max_steer_angle)
         kp = 0.3
         ki = .1
         kd =0.
