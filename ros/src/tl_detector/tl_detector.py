@@ -145,7 +145,7 @@ class TLDetector(object):
 
         #TODO find the closest visible traffic light (if one exists)
         diff = len(self.waypoints.waypoints)
-        if i, light in enumerate(self.lights):
+        for i, light in enumerate(self.lights):
         	# Get stop line waypoint index
         	line = stop_line_positions[i]
         	temp_wp_idx = self.get_closest_waypoint(line[0], line[1])
@@ -157,7 +157,7 @@ class TLDetector(object):
         		line_wp_idx = temp_wp_idx
 
         if closest_light: 		
-       		state = self.get_light_state(closest_light)
+       	    state = self.get_light_state(closest_light)
             return line_wp_idx, state
         
         return -1, TrafficLight.UNKNOWN
