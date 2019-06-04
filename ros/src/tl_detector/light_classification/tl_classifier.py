@@ -1,9 +1,14 @@
 from styx_msgs.msg import TrafficLight
+import cv2
+import tensorflow as tf
+import numpy as np
+import rospy
+
 
 class TLClassifier(object):
     def __init__(self):
         #TODO load classifier
-        PATH_TO_MODEL = './fine_tuned_model/frozen_inference_graph.pb'
+        PATH_TO_MODEL = '/home/student/CarND-Capstone/ros/src/tl_detector/light_classification/fine_tuned_model/frozen_inference_graph.pb'
         self.detection_graph = tf.Graph()
         with self.detection_graph.as_default():
             od_graph_def = tf.GraphDef()
@@ -23,7 +28,7 @@ class TLClassifier(object):
          # Bounding Box Detection.
         with self.detection_graph.as_default():
             # Expand dimension since the model expects image to have shape [1, None, None, 3].
-            img_expanded = np.expand_dims(img, axis=0)  
+            img_expanded = np.expand_dims(image, axis=0)  
             (boxes, scores, classes, num) = self.sess.run(
                 [self.d_boxes, self.d_scores, self.d_classes, self.num_d],
                 feed_dict={self.image_tensor: img_expanded})
@@ -36,7 +41,9 @@ class TLClassifier(object):
         for i in range(0,int(num)):
         	class_id = int(classes[0,i])
         	score = scores[0,i]
-        	if score > 0.3: 
+            	#rospy.loginfo("score %s and class_id %s \n ", score, class_id)
+
+        	if score > 0.2: 
         		if (class_id == 1):
         			green_light += 1
         			green_score += score
@@ -48,15 +55,23 @@ class TLClassifier(object):
         			red_score += score
 
         max_score  = max(green_score,yellow_score,red_score)
+        #rospy.loginfo("green  %s yellow %s red %s \n ", green_score, yellow_score, red_score)
+        state =  4
 
-        if max_score < 0.5:
-        	return  TrafficLight.UNKNOWN
+        if max_score < 0.3:
+        	state = TrafficLight.UNKNOWN
         else:
-	        if (max_score == green_score):
-	        	return TrafficLight.GREEN
-	        elif (max_score == yellow_score):
-	        	return TrafficLight.YELLOW
-	        elif (max_score == red_score):
-	        	return TrafficLight.RED
+	        if (green_score> red_score and green_score> yellow_score):
+	        	state = 2
+	        elif (yellow_score> red_score and yellow_score> green_score):
+	        	state =  1
+	        elif (red_score> green_score and red_score> yellow_score):
+	        	state = 0
+            	else:
+                	state =  4
+
+        rospy.loginfo("state is %s \n ", state)
+
+        return state
 
 
