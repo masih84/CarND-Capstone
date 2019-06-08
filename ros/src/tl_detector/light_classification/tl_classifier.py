@@ -38,6 +38,7 @@ class TLClassifier(object):
         red_score = 0
         green_score = 0
         yellow_score =0
+        total_score = 0
         for i in range(0,int(num)):
         	class_id = int(classes[0,i])
         	score = scores[0,i]
@@ -57,12 +58,14 @@ class TLClassifier(object):
         max_score  = max(green_score,yellow_score,red_score)
         #rospy.loginfo("green  %s yellow %s red %s \n ", green_score, yellow_score, red_score)
         state =  4
+        total_score = max_score
 
         if max_score < 0.3:
         	state = TrafficLight.UNKNOWN
         else:
 	        if (green_score> red_score and green_score> yellow_score):
 	        	state = 2
+
 	        elif (yellow_score> red_score and yellow_score> green_score):
 	        	state =  1
 	        elif (red_score> green_score and red_score> yellow_score):
@@ -70,8 +73,8 @@ class TLClassifier(object):
             	else:
                 	state =  4
 
-        rospy.loginfo("state is %s \n ", state)
+        #rospy.loginfo("state is %s \n ", state)
 
-        return state
+        return state,total_score
 
 

@@ -5,7 +5,7 @@ import rospy
 
 GAS_DENSITY = 2.858
 ONE_MPH = 0.44704
-
+scale_steering_angle = 5
 
 class Controller(object):
     def __init__(self, vehicle_mass ,
@@ -22,11 +22,11 @@ class Controller(object):
 
 
         self.yaw_controller = YawController(wheel_base, steer_ratio, 0.1, max_lat_accel, max_steer_angle)
-        kp = 0.3
-        ki = .1
+        kp = 0.2
+        ki = .04
         kd =0.
         mn =0. # min throtle value
-        mx =.1 # max throtle value
+        mx =.10 # max throtle value
 
         self.throttle_controller = PID(kp, ki, kd, mn, mx)
 
@@ -39,6 +39,7 @@ class Controller(object):
         self.decel_limit =decel_limit
         self.accel_limit = accel_limit
         self.wheel_radius = wheel_radius
+        self.twist_loop_counter = 0
 
 
 	self.last_time =  rospy.get_time()
@@ -53,12 +54,17 @@ class Controller(object):
 
     	steering = self.yaw_controller.get_steering(linear_vel, angular_vel, current_vel)
 
-    	vel_error = linear_vel - current_vel
+    	vel_error = linear_vel - current_vel - scale_steering_angle*abs(steering)
     	self.last_vel = current_vel
 
     	current_time = rospy.get_time()
     	sample_time = current_time - self.last_time
     	self.last_time = current_time
+        #self.twist_loop_counter += 1
+
+        #if self.twist_loop_counter== 20 :
+        #self.twist_loop_counter = 0
+        #rospy.loginfo("Velocity error is %s and streen error is %s \n ", vel_error,scale_steering_angle*abs(steering))
 
     	throttle = self.throttle_controller.step(vel_error, sample_time)
 	brake = 0
