@@ -3,7 +3,7 @@
 
 This is the final project for the Udacity Self-Driving Car Engineer Nanodegree.  In this project, I created several ROS nodes to implement the core functionality of an autonomous vehicle.  For more information about the project, see the project introduction [here](https://classroom.udacity.com/nanodegrees/nd013/parts/30260907-68c1-4f24-b793-89c0c2a0ad32/modules/702b3c5a-b896-4cca-8a64-dfe0daf09449/lessons/e43b2e6d-6def-4d3a-b332-7a58b847bfa4/concepts/1f6c617c-c8f2-4b44-9906-d192ba7ff924).
 
-# Adding Trained data
+## Adding Trained model
 Due to the size limitation on GitHub, the trained model is not included in the Git repository. Please copy the trained model from [here](https://drive.google.com/drive/folders/1uXxvwPW907UJXw-0wscE8hEZ7ySvEUYb) and unzip it under (ros/src/tl_detector/light_classification).
 
 [//]: # (Image References)
@@ -120,7 +120,6 @@ The low-level component that ensures car follows the chosen trajectory and adjus
 
 
 ### ROS Architecture
-
 The ROS Architecture consists of different nodes that are in communication via ROS messages. The nodes and their communication with each other are explained in details in project descriptions[here](https://classroom.udacity.com/nanodegrees/nd013/parts/30260907-68c1-4f24-b793-89c0c2a0ad32/modules/702b3c5a-b896-4cca-8a64-dfe0daf09449/lessons/e43b2e6d-6def-4d3a-b332-7a58b847bfa4/concepts/455f33f0-2c2d-489d-9ab2-201698fbf21a). 
 
 The central node is the styx_server that links the simulator and ROS by providing information about the car's state such as its position, velocity, and the front camera and receiving control input such as steering angle, braking, and throttle. 
@@ -130,7 +129,6 @@ The images are processed with the traffic light classifier by a trained neural n
 With the subscriber information of the traffic light detector and the subscriptions to base waypoints, the waypoint updater node is able to plan acceleration/deceleration and publish it to the waypoint follower node. This node publishes to the DBW (Drive by wire) node that satisfies the task of steering the car autonomously. It also takes as input the car's current velocity (coming directly from the car/simulator) and outputs steering, braking, and throttle commands. 
 
 ### Node Structures
-
 ![][image1]
 
 Ros nodes structures are shown in this image. The main nodes that we update in this projects are the waypoint updater(waypoint_updater.py), the traffic light detector (tl_detector.py) and the drive by wire node (dbw_node.py). 
@@ -147,7 +145,7 @@ The third node written by us is the dbw_node which is responsible for controllin
 ### Neural Network Design
 
 #### Model
-The traffic light classification model is based on the pre-trained on the COCO dataset model "rfcn_resnet101_coco_2018_01_28" from [Tensorflow detection model zoo](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md). Using the [Tensorflow Object Detection API](https://github.com/tensorflow/models/tree/master/research/object_detection), the simulator data model and real data model were trained. 
+The traffic light classification model is based on the pre-trained on the COCO dataset model "rfcn_resnet101_coco_2018_01_28" from [Tensorflow detection model zoo](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md). Using the [Tensorflow Object Detection API](https://github.com/tensorflow/models/tree/master/research/object_detection), the simulator data model were trained [here](https://github.com/masih84/CarND-Capstone/blob/master/Object_detection/train.py). 
 
 The models are available in the `ros/src/tl_detector/light_classification/fine_tuned_model` directory or [here](https://drive.google.com/drive/folders/1uXxvwPW907UJXw-0wscE8hEZ7ySvEUYb). 
 
@@ -156,9 +154,8 @@ Step-by-step [Tensorflow Object Detection API tutorial](https://medium.com/@WuSt
 
 The simulator dataset was from [here](https://github.com/masih84/CarND-Capstone/tree/master/Object_detection/training_data). Traffic light boxes are labeled [here](https://github.com/masih84/CarND-Capstone/blob/master/Object_detection/training_data/labeld_data.csv) using [Developing Traffic Light Labels .ipynb](https://github.com/masih84/CarND-Capstone/blob/master/Object_detection/Developing%20Traffic%20Light%20Labels%20.ipynb) . Then, they converted to data.tfrecords [here](https://github.com/masih84/CarND-Capstone/tree/master/Object_detection/data) by [GenerateLabelModel2](https://github.com/masih84/CarND-Capstone/blob/master/Object_detection/GenerateLabelModel2.ipynb).
 
-
-#### Classification
-The classification output has four categories: Red, Green, Yellow and off. To simplify, the final output will be Red, yellow, Green or Unknown. The logic is modified such that if the traffic light is unknown, it assumes the previous state is correct. Also, both yellow and red color would lead to stopping the car at the stop line.
+### Training the Object detation
+the pre-trained on the COCO dataset model "rfcn_resnet101_coco_2018_01_28 is modeled to identify the traffic lights status by modifiying its config file [rfcn_resnet101_coco.config](https://github.com/masih84/CarND-Capstone/blob/master/Object_detection/rfcn_resnet101_coco.config), and reducing number of output to four channels. The classification output has four categories: Red, Green, Yellow and off. 
 
 
 #### Examples of Simulator Testing Results:
@@ -172,7 +169,7 @@ The classification output has four categories: Red, Green, Yellow and off. To si
 
 I started by following the walkthrough videos and wrote the program to work. Then, I spent most of my time on making object detection working and installing all required environments. One of the hardest tasks for this project was getting the environment setup. 
 
-Also running the Ros on Virtual machine with no GPU support made the object detection very slow. Also, running the simulation in the Windows was becoming very slow when turning on the Camera. I saw some suggestion such as processing image every 10 cycles and only near traffic lights. These suggestions have improved the speed but still, it was far from perfect.
+Also running the Ros on Virtual machine with no GPU support made the object detection very slow. Also, running the simulation in the Windows was becoming very slow when turning on the Camera. I saw some suggestion such as processing image every 10 cycles and only near traffic lights. These suggestions have improved the speed but still, it was far from perfect. To simplify, the final output will be Red, yellow, Green or Unknown. The logic is modified such that if the traffic light is unknown, it assumes the previous state is correct. Also, both yellow and red color would lead to stopping the car at the stop line.
 
 Overall, this was the most challenging project in this program, and I learned a lot but finishing this. Unfortunately, I could not do this project as a team since I was busy with my day job and could spend time working the project on weekends. However, doing all parts by myself give the opportunity of understanding the details in depth.  
 
