@@ -151,7 +151,7 @@ The models are available in the `ros/src/tl_detector/light_classification/fine_t
 #### Dataset
 Step-by-step [Tensorflow Object Detection API tutorial](https://medium.com/@WuStangDan/step-by-step-tensorflow-object-detection-api-tutorial-part-1-selecting-a-model-a02b6aabe39e) was a good great source of using the Tensorflow object detection API for traffic light classification.
 
-The simulator dataset was from [here](https://github.com/masih84/CarND-Capstone/tree/master/Object_detection/training_data). Traffic light boxes are labeled[here](https://github.com/masih84/CarND-Capstone/blob/master/Object_detection/training_data/labeld_data.csv) and converted to data.tfrecords.[here] (https://github.com/masih84/CarND-Capstone/tree/master/Object_detection/data)
+The simulator dataset was from [here](https://github.com/masih84/CarND-Capstone/tree/master/Object_detection/training_data). Traffic light boxes are labeled [here](https://github.com/masih84/CarND-Capstone/blob/master/Object_detection/training_data/labeld_data.csv), and converted to data.tfrecords [here](https://github.com/masih84/CarND-Capstone/tree/master/Object_detection/data)
 
 
 #### Classification
