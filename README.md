@@ -3,6 +3,9 @@
 
 This is the final project for the Udacity Self-Driving Car Engineer Nanodegree.  In this project, I created several ROS nodes to implement the core functionality of an autonomous vehicle.  For more information about the project, see the project introduction [here](https://classroom.udacity.com/nanodegrees/nd013/parts/30260907-68c1-4f24-b793-89c0c2a0ad32/modules/702b3c5a-b896-4cca-8a64-dfe0daf09449/lessons/e43b2e6d-6def-4d3a-b332-7a58b847bfa4/concepts/1f6c617c-c8f2-4b44-9906-d192ba7ff924).
 
+# Adding Trained data
+Due to the size limitation on GitHub, the trained model is not included in the Git repository. Please copy the trained model from [here](https://drive.google.com/drive/folders/1uXxvwPW907UJXw-0wscE8hEZ7ySvEUYb) and unzip it under (ros/src/tl_detector/light_classification).
+
 [//]: # (Image References)
 [image1]: ./imgs/carla_architecture.png
 [image2]: ./imgs/final-project-ros-graph-v2.jpg
