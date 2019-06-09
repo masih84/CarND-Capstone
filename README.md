@@ -149,9 +149,10 @@ The traffic light classification model is based on the pre-trained on the COCO d
 The models are available in the `ros/src/tl_detector/light_classification/fine_tuned_model` directory or [here](https://drive.google.com/drive/folders/1uXxvwPW907UJXw-0wscE8hEZ7ySvEUYb). 
 
 #### Dataset
-Step-by-step [Tensorflow Object Detection API tutorial](https://medium.com/@WuStangDan/step-by-step-tensorflow-object-detection-api-tutorial-part-1-selecting-a-model-a02b6aabe39e) was a good great source of using the Tensorflow object detection API for traffic light classification. 
+Step-by-step [Tensorflow Object Detection API tutorial](https://medium.com/@WuStangDan/step-by-step-tensorflow-object-detection-api-tutorial-part-1-selecting-a-model-a02b6aabe39e) was a good great source of using the Tensorflow object detection API for traffic light classification.
 
-The simulator dataset was from [here](https://github.com/masih84/CarND-Capstone/tree/master/Object_detection/training_data).
+The simulator dataset was from [here](https://github.com/masih84/CarND-Capstone/tree/master/Object_detection/training_data). Traffic light boxes are labeled[here](https://github.com/masih84/CarND-Capstone/blob/master/Object_detection/training_data/labeld_data.csv) and converted to data.tfrecords.[here] (https://github.com/masih84/CarND-Capstone/tree/master/Object_detection/data)
+
 
 #### Classification
 The classification output has four categories: Red, Green, Yellow and off. To simplify, the final output will be Red, yellow, Green or Unknown. The logic is modified such that if the traffic light is unknown, it assumes the previous state is correct. Also, both yellow and red color would lead to stopping the car at the stop line.
