@@ -12,9 +12,9 @@ import tf
 import cv2
 import yaml
 
-STATE_COUNT_THRESHOLD = 13
+STATE_COUNT_THRESHOLD = 14
 TL_STAT = ['RED','YELLLOW','GREEN','OFF','UNKNOWN']
-DETECTION_INTERVALS = 12
+DETECTION_INTERVALS = 7
 Look_for_tl = 150
 
 class TLDetector(object):
