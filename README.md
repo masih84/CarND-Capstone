@@ -72,3 +72,16 @@ cd CarND-Capstone/ros
 roslaunch launch/site.launch
 ```
 5. Confirm that traffic light detection works on real life images
+
+### System Architecture Diagram
+For this project, I wrote ROS nodes to implement core functionality of the autonomous vehicle system, including traffic light detection, control, and waypoint following! I have done this project indivitually and tested my code using a simulator.
+
+The following is the system architecture diagram showing the ROS nodes and topics used in the project. The ROS nodes and topics shown in the diagram are described briefly in the Code Structure section below.
+
+### Trafic light detection
+The major challange in this project was to identify traffic lights and detect the light color. For that purpuse, I followed 
+Daniel Stang touorial in [Step by Step TensorFlow Object Detection API Tutorial](https://medium.com/@WuStangDan/step-by-step-tensorflow-object-detection-api-tutorial-part-1-selecting-a-model-a02b6aabe39e)
+
+First, git clone https://github.com/tensorflow/models.git. However, I used Anoconda and in order to add the models to the path, first I navigate to "research" folder and then used "SET PYTHONPATH=%cd%;%cd%\slim".
+
+
