@@ -1,5 +1,19 @@
-This is the project repo for the final project of the Udacity Self-Driving Car Nanodegree: Programming a Real Self-Driving Car. For more information about the project, see the project introduction [here](https://classroom.udacity.com/nanodegrees/nd013/parts/6047fe34-d93c-4f50-8336-b70ef10cb4b2/modules/e1a23b06-329a-4684-a717-ad476f0d8dff/lessons/462c933d-9f24-42d3-8bdc-a08a5fc866e4/concepts/5ab4b122-83e6-436d-850f-9f4d26627fd9).
+# System Integration Project
+[![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
 
+This is the final project for the Udacity Self-Driving Car Engineer Nanodegree.  In this project, I created several ROS nodes to implement core functionality of an autonomous vehicle.  For more information about the project, see the project introduction [here](https://classroom.udacity.com/nanodegrees/nd013/parts/30260907-68c1-4f24-b793-89c0c2a0ad32/modules/702b3c5a-b896-4cca-8a64-dfe0daf09449/lessons/e43b2e6d-6def-4d3a-b332-7a58b847bfa4/concepts/1f6c617c-c8f2-4b44-9906-d192ba7ff924).
+
+[//]: # (Image References)
+[image1]: ./imgs/carla_architecture.png
+[image2]: ./imgs/final-project-ros-graph-v2.jpg
+[image3]: ./imgs/system_architecture.png
+[video1]: https://www.youtube.com/watch?time_continue=124&v=PzIRniXv0z0
+
+![][video1]
+
+## Setup
+
+Please use **one** of the two installation options, either native **or** docker installation.
 Please use **one** of the two installation options, either native **or** docker installation.
 
 ### Native Installation
@@ -73,15 +87,91 @@ roslaunch launch/site.launch
 ```
 5. Confirm that traffic light detection works on real life images
 
+## Project Overview
+
 ### System Architecture Diagram
 For this project, I wrote ROS nodes to implement core functionality of the autonomous vehicle system, including traffic light detection, control, and waypoint following! I have done this project indivitually and tested my code using a simulator.
+![][image1]
+
 
 The following is the system architecture diagram showing the ROS nodes and topics used in the project. The ROS nodes and topics shown in the diagram are described briefly in the Code Structure section below.
 
-### Trafic light detection
-The major challange in this project was to identify traffic lights and detect the light color. For that purpuse, I followed 
-Daniel Stang touorial in [Step by Step TensorFlow Object Detection API Tutorial](https://medium.com/@WuStangDan/step-by-step-tensorflow-object-detection-api-tutorial-part-1-selecting-a-model-a02b6aabe39e)
+#### Sensors
+Includes all measurment devices such as **cameras**, **lidar**, **GPS**, **radar**, and **IMU** are used to identify and map the surroundings objects and location including 
+#### Perception
+Abstracts sensor inputs into object **detection** and **localization**
+##### Detection
+* Includes software solution to detect other vehicles, pedestarins, traffic lights, obstacles
+##### Localization
+To idetfy where the car is located in the map with an accuracy of 10cm or less
+#### Planning
+Based on localization, destination and obsticles, it generate the Path for the car. 
+##### Prediction
+The prediction component estimates other cars and people actions and trajectory in the future. 
+##### Behavioral Planning
+High level behavior of the vehicle at any point in time such as stoping a traffic light or intersection, changing lanes, accelerating, or making a left turn onto a new street are all maneuvers that may be issued by this component.
+##### Trajectory Planning
+Based on the high level behavior, the trajectory planning component determines the optimized trajectory to acheive this behavior.
+### Control
+The low level component that ensure car follows the chosen trajectory and adjust the control inputs for smooth operation of the vehicle. 
 
-First, git clone https://github.com/tensorflow/models.git. However, I used Anoconda and in order to add the models to the path, first I navigate to "research" folder and then used "SET PYTHONPATH=%cd%;%cd%\slim".
+
+### ROS Architecture
+
+The ROS Architecture consists of different nodes that are in comunication via ROS messages. The nodes and their communication with each other are explianed in details in project descriptions [here](https://classroom.udacity.com/nanodegrees/nd013/parts/30260907-68c1-4f24-b793-89c0c2a0ad32/modules/702b3c5a-b896-4cca-8a64-dfe0daf09449/lessons/e43b2e6d-6def-4d3a-b332-7a58b847bfa4/concepts/455f33f0-2c2d-489d-9ab2-201698fbf21a). 
+
+The centeral node is the styx_server that links the simulator and ROS by providing information about the car's state such as its position, velocity, and the front camera and receiving control input such as steering angle, braking, and throttle. 
+
+The images are processed with the traffic light classifier by a trained neural network in order to detect traffic lights. The percepted state of a potentially upcoming traffic light is passed to the traffic light detector as well as the car's current pose and a set of base waypoints coming from the waypoint loader. With this frequently incoming information the traffic light detector is able to publish a waypoint close to the next traffic light where the car should stop in case the light is red. 
+
+With the subscribed information of the traffic light detector and the the subscriptions to base waypoints, the waypoint updater node is able to plan acceleration / deceleration and publish it to the waypoint follower node. This node publishes to the DBW (Drive by wire) node that satisfies the task of steering the car autonomously. It also takes as input the car's current velocity (coming directly from the car / simulator) and outputs steering, braking and throttle commands. 
+
+### Node Structures
+
+![][image1]
+
+Ros nodes structures are shown in this image. The main nodes that we update in this projects are the waypoint updater(waypoint_updater.py), the traffic light detector (tl_detector.py) and the drive by wire node (dbw_node.py). 
+
+#### Waypoint Updater
+The waypoint updater node specifies the required waypoints the car follows. The node is structured into different parts: In the initialization of the node, it defines some constants that including number of waypoints and rate of the publications. The most important function is the decelerate_waypoints-function which incorporates a square-root shaped deceleration at stopline location in case of red traffic lights. 
+
+#### Traffic Light Detection
+The purpose of the traffic light detector is to recives the image from Car Camera and detect the traffic light. This node subscribs to the current position base waypoints, the  traffic light array with the ground-truth coordinates of the traffic lights, along with the identified color of the traffic light. The color of the traffic light is the output of the traffic light classifier, a trained neural network. 
+
+#### Drive-By-Wire (DBW) Node
+The third node written by us is the dbw_node which is responsible for controlling the car. It subscribes to a twist controller which outputs throttle, brake and steering values with the help of a PID-controller and Lowpass filter. The dbw node directly publishes throttle, brake and steering commands for the car/simulator, in case dbw_enabled is set to true.
+
+### Neural Network Design
+
+#### Model
+The traffic light classification model is based on the pre-trained on the COCO dataset model "rfcn_resnet101_coco_2018_01_28" from [Tensorflow detection model zoo](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/detection_model_zoo.md). Using the [Tensorflow Object Detection API](https://github.com/tensorflow/models/tree/master/research/object_detection), the simulator data model and real data model were trained. 
+
+The models are available in the `ros/src/tl_detector/light_classification/fine_tuned_model` directory or [here](https://drive.google.com/drive/folders/1uXxvwPW907UJXw-0wscE8hEZ7ySvEUYb). 
+
+#### Dataset
+Step-by-step [Tensorflow Object Detection API tutorial](https://medium.com/@WuStangDan/step-by-step-tensorflow-object-detection-api-tutorial-part-1-selecting-a-model-a02b6aabe39e) was a good great source of using the Tensorflow object detection API for traffic light classification. 
+
+The simulator dataset was from [here](https://github.com/masih84/CarND-Capstone/tree/master/Object_detection/training_data).
+
+#### Classification
+The classification output has four categories: Red, Green, Yellow and off. To simplify, the final output will be Red, yellow, Green or Unkonwn. The logic is modified such that if tracffic light is unlown, dector asume previous state is correct. Also, both yellow and red color would lead to stopping the car at the stop line.
+
+
+#### Examples of Simulator Testing Results:
+
+![sim_red](https://github.com/masih84/CarND-Capstone/blob/master/Object_detection/training_data/processed2/image1.jpg)
+![sim_green](https://github.com/masih84/CarND-Capstone/blob/master/Object_detection/training_data/processed2/image2.jpg)
+![sim-yellow](https://github.com/masih84/CarND-Capstone/blob/master/Object_detection/training_data/processed2/image3.jpg)
+![sim_none](https://github.com/masih84/CarND-Capstone/blob/master/Object_detection/training_data/processed2/image4.jpg)
+
+## Results
+
+I started by following the walkthrough videos and wrote the program to work. Then, I spent most of my time to making object detection working and installing all required environments. One of the hardest tasks for this project was getting the environment setup.
+
+Also running the Ros on Virtual machine with no GPU support made the object detection very slow. Also, running the simulation in the Windows was becoming very slow when turing on the Camera. I saw some suggestion such as processing image every 10 cycle and only near traffic lights. These suggestions were improved the speed but still it was far from perfect.
+
+Overall, this was the most challanging project in this progeam, and I learned a lot but finishing this.
+  
+  
 
 
