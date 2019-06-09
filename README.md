@@ -120,7 +120,6 @@ The low-level component that ensures car follows the chosen trajectory and adjus
 
 
 ### ROS Architecture
-
 The ROS Architecture consists of different nodes that are in communication via ROS messages. The nodes and their communication with each other are explained in details in project descriptions[here](https://classroom.udacity.com/nanodegrees/nd013/parts/30260907-68c1-4f24-b793-89c0c2a0ad32/modules/702b3c5a-b896-4cca-8a64-dfe0daf09449/lessons/e43b2e6d-6def-4d3a-b332-7a58b847bfa4/concepts/455f33f0-2c2d-489d-9ab2-201698fbf21a). 
 
 The central node is the styx_server that links the simulator and ROS by providing information about the car's state such as its position, velocity, and the front camera and receiving control input such as steering angle, braking, and throttle. 
@@ -130,7 +129,6 @@ The images are processed with the traffic light classifier by a trained neural n
 With the subscriber information of the traffic light detector and the subscriptions to base waypoints, the waypoint updater node is able to plan acceleration/deceleration and publish it to the waypoint follower node. This node publishes to the DBW (Drive by wire) node that satisfies the task of steering the car autonomously. It also takes as input the car's current velocity (coming directly from the car/simulator) and outputs steering, braking, and throttle commands. 
 
 ### Node Structures
-
 ![][image1]
 
 Ros nodes structures are shown in this image. The main nodes that we update in this projects are the waypoint updater(waypoint_updater.py), the traffic light detector (tl_detector.py) and the drive by wire node (dbw_node.py). 
